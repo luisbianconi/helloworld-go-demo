@@ -29,28 +29,49 @@ jobs:
           push: true
           tags: devlopesbernardo/hello-world-go:${{ steps.vars.outputs.sha_short }}
           
-      - name: Checkout the other repository
-        uses: actions/checkout@v2
-        with:
-          repository: 'bernardolsp/aulao-pipeline' # replace with your repository
-          token: ${{ secrets.PAT }} # use the PAT you saved as a secret
-          path: 'aulao-pipeline' # this is the directory where the other repo will be checked out
+  deploy_dev:
+      name: Deploys to development environment
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout the other repository
+          uses: actions/checkout@v2
+          with:
+            repository: 'bernardolsp/aulao-pipeline' # replace with your repository
+            token: ${{ secrets.PAT }} # use the PAT you saved as a secret
+            path: 'aulao-pipeline' # this is the directory where the other repo will be checked out
 
+        - name: Install yq 
+          run: |
+            pip3 install yq
+            yq --version
+            
+        - name: Run sed on the other repository
+          run: |
+            yq -yi '.helloWorld.image = "devlopesbernardo/devlopesbernardo/hello-world-go:${{ steps.vars.outputs.sha_short }}"' ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
 
-      - name: Install yq 
-        run: |
-          pip3 install yq
-          yq --version
-          
-      - name: Run sed on the other repository
-        run: |
-          yq -yi '.helloWorld.image = "devlopesbernardo/devlopesbernardo/hello-world-go:${{ steps.vars.outputs.sha_short }}"' ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
+        - name: Commit and push changes
+          run: |
+            cd aulao-pipeline
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add .
+            git commit -am "Update version of helloworld-go image to ${{ steps.vars.outputs.sha_short}}"
+            git push
+    
+  deploy_prod:
+        name: Deploys to prod environment
+        runs-on: ubuntu-latest
+        needs: [push_to_registry, deploy_dev]
+        steps:
+        - name: Run sed on the other repository
+          run: |
+            yq -yi '.helloWorld.image = "devlopesbernardo/devlopesbernardo/hello-world-go:${{ steps.vars.outputs.sha_short }}"' ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
 
-      - name: Commit and push changes
-        run: |
-          cd aulao-pipeline
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add .
-          git commit -am "Update version!" # replace with your commit message
-          git push
+        - name: Commit and push changes
+          run: |
+            cd aulao-pipeline
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add .
+            git commit -am "Update version of helloworld-go image to ${{ steps.vars.outputs.sha_short}}"
+            git push
