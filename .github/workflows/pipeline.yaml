@@ -44,8 +44,7 @@ jobs:
           
       - name: Run sed on the other repository
         run: |
-          cd aulao-pipeline
-          yq -yi '.helloWorld.image = "devlopesbernardo/devlopesbernardo/hello-world-go:${{ steps.vars.outputs.sha_short }}"' aulao-pipeline/dev/helloworld-docker/helm/values.yaml
+          yq -yi '.helloWorld.image = "devlopesbernardo/devlopesbernardo/hello-world-go:${{ steps.vars.outputs.sha_short }}"' ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
 
       - name: Commit and push changes
         run: |
