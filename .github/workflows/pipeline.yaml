@@ -12,6 +12,10 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
 
+      - name: Set outputs
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v1 
         with:
@@ -23,7 +27,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: devlopesbernardo/hello-world-go:latest
+          tags: devlopesbernardo/hello-world-go:${{ steps.vars.outputs.sha_short }}
           
       - name: Checkout the other repository
         uses: actions/checkout@v2
@@ -36,7 +40,7 @@ jobs:
         run: |
           cd aulao-pipeline
           touch test.txt
-          
+
       - name: Commit and push changes
         run: |
           cd other-repo
