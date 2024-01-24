@@ -36,7 +36,9 @@ jobs:
       steps:
         - name: Set outputs
           id: vars
-          run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          run: |
+            echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+            echo "image_name=devlopesbernardo/devlopesbernardo/hello-world-go:${{ steps.vars.outputs.sha_short }}" >> $GITHUB_OUTPUT
           
         - name: Checkout the other repository
           uses: actions/checkout@v2
@@ -52,7 +54,7 @@ jobs:
             
         - name: Run sed on the other repository
           run: |
-            yq -yi '.helloWorld.image = "devlopesbernardo/devlopesbernardo/hello-world-go:${{ steps.vars.outputs.sha_short }}"' ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
+            yq -yi '.helloWorld.image =  "${{ steps.vars.outputs.image_name }}"' ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
 
         - name: Commit and push changes
           run: |
@@ -60,7 +62,7 @@ jobs:
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
             git add .
-            git commit -am "Update version of helloworld-go image in dev to ${{ steps.vars.outputs.sha_short}}"
+            git commit -am "Update version of helloworld-go image in dev to ${{ steps.vars.outputs.sha_short }}"
             git push
     
   deploy_prod:
@@ -72,8 +74,10 @@ jobs:
         
         - name: Set outputs
           id: vars
-          run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-        
+          run: |
+            echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+            echo "image_name=devlopesbernardo/devlopesbernardo/hello-world-go:${{ steps.vars.outputs.sha_short }}" >> $GITHUB_OUTPUT
+
         - name: Checkout the other repository
           uses: actions/checkout@v2
           with:
@@ -88,7 +92,7 @@ jobs:
             
         - name: Run sed on the other repository
           run: |
-            yq -yi '.helloWorld.image = "devlopesbernardo/devlopesbernardo/hello-world-go:${{ steps.vars.outputs.sha_short }}"' ./aulao-pipeline/prd/helloworld-docker/helm/values.yaml
+            yq -yi '.helloWorld.image =  "${{ steps.vars.outputs.image_name }}"' ./aulao-pipeline/prd/helloworld-docker/helm/values.yaml
 
         - name: Commit and push changes
           run: |
@@ -96,5 +100,5 @@ jobs:
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
             git add .
-            git commit -am "Update version of helloworld-go image in prd to ${{ steps.vars.outputs.sha_short}}"
+            git commit -am "Update version of helloworld-go image in prd to ${{ steps.vars.outputs.sha_short }}"
             git push
