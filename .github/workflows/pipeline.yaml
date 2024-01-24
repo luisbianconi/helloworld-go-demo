@@ -43,8 +43,8 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          cd other-repo
+          cd aulao-pipeline
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git commit -am "Commit message" # replace with your commit message
+          git commit -am "Update version!" # replace with your commit message
           git push
