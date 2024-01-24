@@ -62,6 +62,7 @@ jobs:
   deploy_prod:
         name: Deploys to prod environment
         runs-on: ubuntu-latest
+        environment: prod
         needs: [push_to_registry, deploy_dev]
         steps:
 
