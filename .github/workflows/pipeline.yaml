@@ -23,20 +23,20 @@ jobs:
         with:
           context: .
           push: true
-          tags: your-dockerhub-username/your-repo-name:latest
+          tags: devlopesbernardo/hello-world-go:latest
           
       - name: Checkout the other repository
         uses: actions/checkout@v2
         with:
-          repository: 'owner/repo' # replace with your repository
+          repository: 'bernardolsp/aulao-pipeline' # replace with your repository
           token: ${{ secrets.PAT }} # use the PAT you saved as a secret
-          path: 'other-repo' # this is the directory where the other repo will be checked out
+          path: 'aulao-pipeline' # this is the directory where the other repo will be checked out
 
       - name: Run sed on the other repository
         run: |
-          cd other-repo
-          sed -i 's/foo/bar/g' file.txt # replace with your sed command
-
+          cd aulao-pipeline
+          touch test.txt
+          
       - name: Commit and push changes
         run: |
           cd other-repo
