@@ -27,7 +27,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: devlopesbernardo/hello-world-go:$image_version
+          tags: devlopesbernardo/hello-world-go:${{env.image_version}}
           
   deploy_dev:
       name: Deploys to development environment
