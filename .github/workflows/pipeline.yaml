@@ -12,10 +12,6 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
 
-      - name: Set outputs
-        id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
       - name: Log in to Docker Hub
         uses: docker/login-action@v1 
         with:
@@ -27,7 +23,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: devlopesbernardo/hello-world-go:${{ steps.vars.outputs.sha_short }}
+          tags: devlopesbernardo/hello-world-go:$(git rev-parse --short HEAD)
           
   deploy_dev:
       name: Deploys to development environment
@@ -53,7 +49,7 @@ jobs:
             
         - name: Run sed on the other repository
           run: |
-            yq -yi '.helloWorld.image =  "${{ env.image_name }}"' ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
+            yq -yi '.helloWorld.image =  "${{ image_name }}"' ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
 
         - name: Commit and push changes
           run: |
@@ -90,7 +86,7 @@ jobs:
             
         - name: Run sed on the other repository
           run: |
-            yq -yi '.helloWorld.image =  "${{ env.image_name }}"' ./aulao-pipeline/prd/helloworld-docker/helm/values.yaml
+            yq -yi '.helloWorld.image =  "${{ image_name }}"' ./aulao-pipeline/prd/helloworld-docker/helm/values.yaml
 
         - name: Commit and push changes
           run: |
