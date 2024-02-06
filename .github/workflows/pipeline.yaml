@@ -45,15 +45,10 @@ jobs:
             repository: 'bernardolsp/aulao-pipeline' # replace with your repository
             token: ${{ secrets.PAT }} # use the PAT you saved as a secret
             path: 'aulao-pipeline' # this is the directory where the other repo will be checked out
-
-        - name: Install yq 
-          run: |
-            pip3 install yq
-            yq --version
             
         - name: Run sed on the other repository
           run: |
-            yq -yi '.helloWorld.image =  "$image_name"' ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
+            sed -i '/^ *image:/s|.*|& $image_name|' ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
 
         - name: Commit and push changes
           run: |
@@ -82,15 +77,10 @@ jobs:
             repository: 'bernardolsp/aulao-pipeline' # replace with your repository
             token: ${{ secrets.PAT }} # use the PAT you saved as a secret
             path: 'aulao-pipeline' # this is the directory where the other repo will be checked out
-
-        - name: Install yq 
-          run: |
-            pip3 install yq
-            yq --version
             
         - name: Run sed on the other repository
           run: |
-            yq -yi '.helloWorld.image =  "$image_name"' ./aulao-pipeline/prd/helloworld-docker/helm/values.yaml
+            sed -i '/^ *image:/s|.*|& $image_name|' ./aulao-pipeline/prd/helloworld-docker/helm/values.yaml
 
         - name: Commit and push changes
           run: |
