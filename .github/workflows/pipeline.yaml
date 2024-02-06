@@ -37,7 +37,8 @@ jobs:
         - name: Set outputs
           id: vars
           run: |
-            echo "image_name=devlopesbernardo/devlopesbernardo/hello-world-go:$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+            echo "image_name=devlopesbernardo/devlopesbernardo/hello-world-go" >> $GITHUB_ENV
+            echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           
         - name: Checkout the other repository
           uses: actions/checkout@v2
@@ -48,8 +49,7 @@ jobs:
             
         - name: Run sed on the other repository
           run: |
-            sed -i "/^ *image:/s|.*|& $image_name|" ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
-
+            sed -i "/^ *image:/s|.*|image: $image_name:$sha_short|" ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
 
         - name: Commit and push changes
           run: |
@@ -70,7 +70,8 @@ jobs:
         - name: Set outputs
           id: vars
           run: |
-            echo "image_name=devlopesbernardo/devlopesbernardo/hello-world-go:$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+            echo "image_name=devlopesbernardo/devlopesbernardo/hello-world-go" >> $GITHUB_ENV
+            echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
         - name: Checkout the other repository
           uses: actions/checkout@v2
@@ -81,7 +82,7 @@ jobs:
             
         - name: Run sed on the other repository
           run: |
-            sed -i "/^ *image:/s|.*|& $image_name|" ./aulao-pipeline/prd/helloworld-docker/helm/values.yaml
+            sed -i "/^ *image:/s|.*|image: $image_name:$sha_short|" ./aulao-pipeline/prd/helloworld-docker/helm/values.yaml
 
         - name: Commit and push changes
           run: |
