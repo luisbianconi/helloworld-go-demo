@@ -48,7 +48,8 @@ jobs:
             
         - name: Run sed on the other repository
           run: |
-            sed -i '/^ *image:/s|.*|& $image_name|' ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
+            sed -i "/^ *image:/s|.*|& $image_name|" ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
+
 
         - name: Commit and push changes
           run: |
@@ -80,7 +81,7 @@ jobs:
             
         - name: Run sed on the other repository
           run: |
-            sed -i '/^ *image:/s|.*|& $image_name|' ./aulao-pipeline/prd/helloworld-docker/helm/values.yaml
+            sed -i "/^ *image:/s|.*|& $image_name|" ./aulao-pipeline/prd/helloworld-docker/helm/values.yaml
 
         - name: Commit and push changes
           run: |
