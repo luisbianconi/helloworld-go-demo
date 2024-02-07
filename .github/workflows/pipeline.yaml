@@ -49,20 +49,11 @@ jobs:
             token: ${{ secrets.PAT }} # use the PAT you saved as a secret
             path: 'aulao-pipeline' # this is the directory where the other repo will be checked out
             
-
-        - name: Debug SHA
-          env:
-            IMAGE_TAG: ${{ needs.push_to_registry.outputs.TAG }}
-          run: |
-            echo "SHA Short: ${{ env.sha_short }}"
-            echo "test2: ${{ steps.vars.outputs.sha_short }}"
-            echo $IMAGE_TAG
-            
         - name: Run sed on the other repository
           env:
             IMAGE_TAG: ${{ needs.push_to_registry.outputs.TAG }}
           run: |
-            sed -i "/^ *image:/s|.*|image: devlopesbernardo/hello-world-go:$IMAGE_TAG|" ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
+            sed -i "/^ *image:/s|.*|  image: devlopesbernardo/hello-world-go:$IMAGE_TAG|" ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
 
         - name: Commit and push changes
           run: |
@@ -88,9 +79,10 @@ jobs:
             path: 'aulao-pipeline' # this is the directory where the other repo will be checked out
             
         - name: Run sed on the other repository
+          env:
+            IMAGE_TAG: ${{ needs.push_to_registry.outputs.TAG }}
           run: |
-            sed -i "/^ *image:/s|.*|image: ${{ env.image_name }}:${{ env.sha_short }}|" ./aulao-pipeline/prd/helloworld-docker/helm/values.yaml
-
+            sed -i "/^ *image:/s|.*|  image: devlopesbernardo/hello-world-go:$IMAGE_TAG|" ./aulao-pipeline/prd/helloworld-docker/helm/values.yaml
         - name: Commit and push changes
           run: |
             cd aulao-pipeline
