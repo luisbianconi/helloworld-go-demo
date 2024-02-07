@@ -59,8 +59,10 @@ jobs:
             echo $IMAGE_TAG
             
         - name: Run sed on the other repository
+          env:
+            IMAGE_TAG: ${{ needs.push_to_registry.outputs.TAG }}
           run: |
-            sed -i "/^ *image:/s|.*|image: ${{ env.image_name }}:${{ env.sha_short }}|" ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
+            sed -i "/^ *image:/s|.*|image: devlopesbernardo/hello-world-go:$IMAGE_TAG|" ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
 
         - name: Commit and push changes
           run: |
