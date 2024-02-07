@@ -20,7 +20,7 @@ jobs:
           echo "image_version=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           echo "image_name=devlopesbernardo/hello-world-go" >> $GITHUB_ENV
           image_tag=$(git rev-parse --short HEAD)
-          echo TAG=devlopesbernardo/hello-world-go:$image_tag >> $GITHUB_OUTPUT
+          echo TAG=$image_tag >> $GITHUB_OUTPUT
           echo devlopesbernardo/hello-world-go:$image_tag
 
       - name: Log in to Docker Hub
