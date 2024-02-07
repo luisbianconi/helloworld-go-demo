@@ -19,7 +19,9 @@ jobs:
         run: |
           echo "image_version=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           echo "image_name=devlopesbernardo/hello-world-go" >> $GITHUB_ENV
-          echo TAG=devlopesbernardo/hello-world-go:$(git rev-parse --short HEAD) >> $GITHUB_OUTPUT
+          image_tag=$(git rev-parse --short HEAD)
+          echo TAG=devlopesbernardo/hello-world-go:$image_tag >> $GITHUB_OUTPUT
+          echo devlopesbernardo/hello-world-go:$image_tag
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v1 
