@@ -19,7 +19,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
   \____\_______/
 
 	
-Hello from Bernardo :)!
+Hello from Aulao Carai! :)!
 
 `)
 }
