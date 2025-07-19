@@ -63,14 +63,19 @@ jobs:
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
 
-            BRANCH_NAME="dev-${IMAGE_TAG}"
+            BRANCH_NAME="dev-latest"
             
-            # Check if branch already exists and delete it
+            # Check if branch already exists
             if git ls-remote --heads origin "$BRANCH_NAME" | grep -q "$BRANCH_NAME"; then
-              git push origin --delete "$BRANCH_NAME"
+              # Switch to existing branch and reset to main
+              git fetch origin "$BRANCH_NAME"
+              git checkout "$BRANCH_NAME"
+              git reset --hard origin/main
+            else
+              # Create new branch from main
+              git checkout -b "$BRANCH_NAME"
             fi
             
-            git checkout -b "$BRANCH_NAME"
             git add .
             git commit -m "feat: deploy $IMAGE_TAG to development environment"
-            git push origin "$BRANCH_NAME" 
+            git push origin "$BRANCH_NAME" --force 

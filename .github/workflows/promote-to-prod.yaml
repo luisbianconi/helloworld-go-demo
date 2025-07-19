@@ -1,0 +1,37 @@
+name: Promover Dev para Produção
+
+on:
+  workflow_dispatch:
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
+          repository: luisbianconi/aulao-pipeline
+          path: aulao-pipeline
+
+      - name: Promover dev-latest para produção
+        run: |
+          cd aulao-pipeline
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+
+          # Fazer checkout da main
+          git checkout main
+          git pull origin main
+
+          # Fazer fetch do branch de dev-latest
+          git fetch origin dev-latest
+          
+          # Copiar os arquivos de dev para prd na main
+          git checkout origin/dev-latest -- dev/helloworld-docker/
+          cp -r dev/helloworld-docker/* prd/helloworld-docker/
+          
+          # Commit e push para main
+          git add .
+          git commit -m "feat: promote dev-latest to production"
+          git push origin main
