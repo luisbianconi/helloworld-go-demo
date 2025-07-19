@@ -1,0 +1,23 @@
+on:
+  workflow_dispatch:
+    inputs:
+      from_dev:
+        description: 'Dev branch (e.g. dev-abc123)'
+        required: true
+      to_prod:
+        description: 'Prod branch (e.g. prod-abc123)'
+        required: true
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT }}
+      - name: Create prod branch from dev
+        run: |
+          git fetch origin ${{ github.event.inputs.from_dev }}
+          git checkout -b ${{ github.event.inputs.to_prod }} origin/${{ github.event.inputs.from_dev }}
+          git push origin ${{ github.event.inputs.to_prod }}
