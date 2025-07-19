@@ -55,14 +55,20 @@ jobs:
           run: |
             sed -i "/^ *image:/s|.*|  image: luisbianconi/hello-world-go:$IMAGE_TAG|" ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
 
-        - name: Commit and push changes
+        - name: Commit and push changes to new branch
+          env:
+            IMAGE_TAG: ${{ needs.push_to_registry.outputs.TAG }}
           run: |
             cd aulao-pipeline
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
+
+            BRANCH_NAME="dev-${IMAGE_TAG}"
+            git checkout -b "$BRANCH_NAME"
+
             git add .
-            git commit -am "Update version of helloworld-go image in dev"
-            git push
+            git commit -am "feat: update image to $IMAGE_TAG for preview"
+            git push origin "$BRANCH_NAME" 
     
   deploy_prod:
         name: Deploys to prod environment
