@@ -49,12 +49,6 @@ jobs:
             token: ${{ secrets.PAT }}
             path: 'aulao-pipeline'
             
-        - name: Update image tag in dev values
-          env:
-            IMAGE_TAG: ${{ needs.push_to_registry.outputs.TAG }}
-          run: |
-            sed -i "/^ *image:/s|.*|  image: luisbianconi/hello-world-go:$IMAGE_TAG|" ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
-
         - name: Create dev branch and push changes
           env:
             IMAGE_TAG: ${{ needs.push_to_registry.outputs.TAG }}
@@ -65,14 +59,15 @@ jobs:
 
             BRANCH_NAME="dev-latest"
             
+            # First, update the image tag in values.yaml
+            sed -i "/^ *image:/s|.*|  image: luisbianconi/hello-world-go:$IMAGE_TAG|" dev/helloworld-docker/helm/values.yaml
+            
             # Check if branch already exists
             if git ls-remote --heads origin "$BRANCH_NAME" | grep -q "$BRANCH_NAME"; then
-              # Switch to existing branch and reset to main
-              git fetch origin "$BRANCH_NAME"
-              git checkout "$BRANCH_NAME"
-              git reset --hard origin/main
+              # If branch exists, force push from current state
+              git checkout -B "$BRANCH_NAME"
             else
-              # Create new branch from main
+              # Create new branch
               git checkout -b "$BRANCH_NAME"
             fi
             
