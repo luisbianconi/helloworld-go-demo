@@ -1,23 +1,30 @@
+name: Promover Dev para Produção
+
 on:
   workflow_dispatch:
     inputs:
-      from_dev:
-        description: 'Dev branch (e.g. dev-abc123)'
-        required: true
-      to_prod:
-        description: 'Prod branch (e.g. prod-abc123)'
+      dev_branch:
+        description: 'Nome do branch de preview (ex: dev-abc123)'
         required: true
 
 jobs:
   promote:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.PAT }}
-      - name: Create prod branch from dev
+          repository: luisbianconi/aulao-pipeline
+          path: aulao-pipeline
+
+      - name: Criar branch de produção correspondente
         run: |
-          git fetch origin ${{ github.event.inputs.from_dev }}
-          git checkout -b ${{ github.event.inputs.to_prod }} origin/${{ github.event.inputs.from_dev }}
-          git push origin ${{ github.event.inputs.to_prod }}
+          cd aulao-pipeline
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+
+          git fetch origin ${{ github.event.inputs.dev_branch }}
+          PROD_BRANCH="${{ github.event.inputs.dev_branch/dev/prd }}"
+          git checkout -b "$PROD_BRANCH" origin/${{ github.event.inputs.dev_branch }}
+          git push origin "$PROD_BRANCH"
