@@ -12,7 +12,7 @@ jobs:
       TAG: ${{ steps.vars.outputs.TAG }}
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set outputs
         id: vars
@@ -24,13 +24,13 @@ jobs:
           echo luisbianconi/hello-world-go:$image_tag
 
       - name: Log in to Docker Hub
-        uses: docker/login-action@v1 
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           context: .
           push: true
@@ -43,19 +43,19 @@ jobs:
       steps:
 
         - name: Checkout the other repository
-          uses: actions/checkout@v2
+          uses: actions/checkout@v4
           with:
-            repository: 'luisbianconi/aulao-pipeline' # replace with your repository
-            token: ${{ secrets.PAT }} # use the PAT you saved as a secret
-            path: 'aulao-pipeline' # this is the directory where the other repo will be checked out
+            repository: 'luisbianconi/aulao-pipeline'
+            token: ${{ secrets.PAT }}
+            path: 'aulao-pipeline'
             
-        - name: Run sed on the other repository
+        - name: Update image tag in dev values
           env:
             IMAGE_TAG: ${{ needs.push_to_registry.outputs.TAG }}
           run: |
             sed -i "/^ *image:/s|.*|  image: luisbianconi/hello-world-go:$IMAGE_TAG|" ./aulao-pipeline/dev/helloworld-docker/helm/values.yaml
 
-        - name: Commit and push changes to new branch
+        - name: Create dev branch and push changes
           env:
             IMAGE_TAG: ${{ needs.push_to_registry.outputs.TAG }}
           run: |
@@ -64,8 +64,13 @@ jobs:
             git config --local user.name "GitHub Action"
 
             BRANCH_NAME="dev-${IMAGE_TAG}"
+            
+            # Check if branch already exists and delete it
+            if git ls-remote --heads origin "$BRANCH_NAME" | grep -q "$BRANCH_NAME"; then
+              git push origin --delete "$BRANCH_NAME"
+            fi
+            
             git checkout -b "$BRANCH_NAME"
-
             git add .
-            git commit -am "feat: update image to $IMAGE_TAG for preview"
+            git commit -m "feat: deploy $IMAGE_TAG to development environment"
             git push origin "$BRANCH_NAME" 
