@@ -69,31 +69,3 @@ jobs:
             git add .
             git commit -am "feat: update image to $IMAGE_TAG for preview"
             git push origin "$BRANCH_NAME" 
-    
-  deploy_prod:
-        name: Deploys to prod environment
-        runs-on: ubuntu-latest
-        environment: prod
-        needs: [push_to_registry, deploy_dev]
-        steps:
-
-        - name: Checkout the other repository
-          uses: actions/checkout@v2
-          with:
-            repository: 'luisbianconi/aulao-pipeline' # replace with your repository
-            token: ${{ secrets.PAT }} # use the PAT you saved as a secret
-            path: 'aulao-pipeline' # this is the directory where the other repo will be checked out
-            
-        - name: Run sed on the other repository
-          env:
-            IMAGE_TAG: ${{ needs.push_to_registry.outputs.TAG }}
-          run: |
-            sed -i "/^ *image:/s|.*|  image: luisbianconi/hello-world-go:$IMAGE_TAG|" ./aulao-pipeline/prd/helloworld-docker/helm/values.yaml
-        - name: Commit and push changes
-          run: |
-            cd aulao-pipeline
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-            git add .
-            git commit -am "Update version of helloworld-go image in prd"
-            git push
