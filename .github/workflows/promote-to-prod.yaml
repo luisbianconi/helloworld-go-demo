@@ -25,6 +25,13 @@ jobs:
           git config user.email "action@github.com"
 
           git fetch origin ${{ github.event.inputs.dev_branch }}
-          PROD_BRANCH="${{ github.event.inputs.dev_branch/dev/prd }}"
+          PROD_BRANCH="${{ github.event.inputs.dev_branch }}"
+          PROD_BRANCH="${PROD_BRANCH/dev-/prd-}"
           git checkout -b "$PROD_BRANCH" origin/${{ github.event.inputs.dev_branch }}
+          
+          # Copiar os arquivos de dev para prd
+          cp -r dev/helloworld-docker/* prd/helloworld-docker/
+          
+          git add .
+          git commit -m "feat: promote ${{ github.event.inputs.dev_branch }} to production"
           git push origin "$PROD_BRANCH"
