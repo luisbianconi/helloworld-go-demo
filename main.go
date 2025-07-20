@@ -19,7 +19,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
   \____\_______/
 
 	
-Hello from Aulao Pipeline! Production V2 :)
+Hello from Aulao Pipeline! Production v1 :)
 
 `)
 }
