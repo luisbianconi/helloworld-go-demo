@@ -31,6 +31,8 @@ jobs:
           git checkout origin/dev-latest -- dev/helloworld-docker/
           cp -r dev/helloworld-docker/* prd/helloworld-docker/
           sed -i 's/dev.luisbianconi.com/prd.luisbianconi.com/g' prd/helloworld-docker/helm/values.yaml
+          sed -i 's/dev-luisbianconi-com-tls/prd-luisbianconi-com-tls/g' prd/helloworld-docker/helm/values.yaml
+          sed -i 's/letsencrypt-dev/letsencrypt-prod/g' prd/helloworld-docker/helm/values.yaml
           
           # Commit e push para main
           git add .
