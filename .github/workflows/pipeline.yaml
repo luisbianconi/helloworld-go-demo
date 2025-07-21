@@ -73,4 +73,9 @@ jobs:
             
             git add .
             git commit -m "feat: deploy $IMAGE_TAG to development environment"
-            git push origin "$BRANCH_NAME" --force 
+            git push origin "$BRANCH_NAME" --force
+
+        - name: Trigger ArgoCD Refresh
+          run: |
+            # Trigger ArgoCD refresh via API (opcional, se você tiver acesso à API)
+            echo "Branch dev-latest updated. ArgoCD will detect changes within 3 minutes or use webhook for instant sync." 
